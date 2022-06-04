@@ -22,10 +22,6 @@ func _physics_process(delta: float) -> void:
 	
 	var direction = player.position.x - position.x
 	
-	if collider_name == "player":
-		suppress += 1
-		stop(suppress)
-		
 		
 	
 	if attacking == false: 
@@ -88,7 +84,8 @@ func search_and_destroy(count: int):
 		$search.start()
 func stop(count: int):
 	if count >= 1:
-		_velocity.x = 0
+		#_velocity.x = 0
+		pass
 	
-
-
+func _on_Area2D_body_entered(body):
+	_velocity.x = 0
