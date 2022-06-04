@@ -241,11 +241,11 @@ func morph(sprite: String, spriteNode: AnimatedSprite) -> void:
 	spriteNode.scale.x = curSprite.scale.x
 	curSprite.visible = false
 	curSprite.stop()
-	print(curSprite)
+
 	curSprite = get_current_sprite(sprite)
 	curSprite.visible = true
 	curSprite.play("idle")
-	print(curSprite)
+
 
 func _on_dashInit_timeout() -> void:
 	pass # Replace with function body.
