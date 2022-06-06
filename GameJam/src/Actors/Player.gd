@@ -11,14 +11,20 @@ var charging = false
 var morph = false
 var morphA= false
 var morphD = false
+var hit = false
 
 var jumpcount = 0
 #override
 var dash_on = false
+var directionNormal = 1
 
 const RAPID = preload("res://src/Effects/assault.tscn")
 const ROCKET = preload("res://src/Effects/rocket.tscn")
 
+export var knockback = 500
+export var knockup = -100
+
+var hp = 5
 
 var dash = 0
 var getLastDir = Vector2(0, 0)
@@ -27,7 +33,7 @@ onready var animWoodCutter = $animWoodCutter
 onready var cyberDude = $cyberDude
 onready var biker = $biker
 
-onready var attack = $animWoodCutter/Area2D/areaAttack
+onready var attack = $animWoodCutter/aAttack/areaAttack
 onready var dashInit = $dashInit
 onready var dashRelay = $dashRelay
 
@@ -117,15 +123,25 @@ func _physics_process(delta: float) -> void:
 	if direction.x != 0 and not attacking:
 		if direction.x > 0:
 			curSprite.scale.x = 2
+			directionNormal = 1
 		else:
 			curSprite.scale.x = -2
+			directionNormal = -1
 		
 	
 	#end custom
 	curSprite.play(animation)
-	if (attacking == false):
+	if (attacking == false and hit == false):
 		_velocity = calculate_move_velocity(_velocity, direction, speed, is_jump_interrupted)
-		_velocity = move_and_slide(_velocity, FLOOR_NORMAL)
+	elif (hit == true):
+		_velocity.x -= lerp(_velocity.x, knockback * directionNormal, 0.5)
+		_velocity.y = lerp(0, knockup, 0.8)
+	_velocity = move_and_slide(_velocity, FLOOR_NORMAL)
+
+func frmFreeze(timescale, duration):
+	Engine.time_scale = timescale
+	yield(get_tree().create_timer(duration * timescale), "timeout")
+	Engine.time_scale = 1.0
 
 func get_current_sprite(sprite: String) -> AnimatedSprite:
 	var newSprite: AnimatedSprite = null
@@ -193,6 +209,12 @@ func get_new_animation(is_shooting = false):
 		animation_new = "morph"
 	if attacking == true:
 		animation_new = "attack"
+		
+	if hit == true:
+		animation_new = "hit"
+		frmFreeze(0.05, 1.0)
+	if hp == 0:
+		animation_new = "death"
 	return animation_new
 #timers
 func dashTimer() -> void:
@@ -214,6 +236,8 @@ func _on_animWoodCutter_animation_finished() -> void:
 		morphD= false
 	else:
 		pass
+	if hit == true:
+		hit = false
 
 func _on_cyberDude_animation_finished() -> void:
 	attacking = false
@@ -254,6 +278,13 @@ func _on_dashRelay_timeout() -> void:
 	dashing = false
 	dash = 0
 
+func _on_aBody_area_entered(area):
+	if area.is_in_group("enemyArea"):
+		hit = true
+		hp -= 1
 
-
-
+func _on_aBody_body_entered(body):
+	print(body)
+	if body.is_in_group("enemyBody"):
+		hit = true
+		hp -= 1
