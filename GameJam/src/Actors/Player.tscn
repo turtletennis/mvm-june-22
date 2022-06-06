@@ -21,7 +21,7 @@
 [ext_resource path="res://assets/Woodcutter/Woodcutter_death.png" type="Texture" id=19]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 16.5, 5.5 )
+extents = Vector2( 16.5, 27 )
 
 [sub_resource type="AtlasTexture" id=2]
 atlas = ExtResource( 1 )
@@ -498,7 +498,7 @@ gravity = 1300.0
 speed = Vector2( 500, 1000 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( -15.5, 42.5 )
+position = Vector2( -15.5, 21 )
 shape = SubResource( 1 )
 
 [node name="animWoodCutter" type="AnimatedSprite" parent="."]
